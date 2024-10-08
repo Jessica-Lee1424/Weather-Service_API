@@ -137,6 +137,7 @@ async getWeatherForCity(): Promise<any> {
           const forecast
       }
 
-      export default new WeatherService()
-};
+      export default new WeatherService();
+    }
+  } 
 }
