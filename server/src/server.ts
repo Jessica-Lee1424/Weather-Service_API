@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import path from 'path'; // Import path module for resolving directory paths
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -17,14 +17,14 @@ app.use(express.json()); // Parses incoming JSON requests
 app.use(express.urlencoded({ extended: true })); // Parses incoming URL-encoded form data
 
 // Serve static files from the client dist folder
-app.use(express.static(path.join(__dirname, '../client/dist')));
+app.use(express.static('../client/dist'));
 
 // Connect your routes
 app.use('/api', routes);
 
 // Serve the index.html file for any other requests (for client-side routing)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+app.get('*', (_req, res) => {
+    res.sendFile('../client/dist/index.html');
 });
 
 app.listen(PORT, () => {

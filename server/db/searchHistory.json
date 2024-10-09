@@ -1,4 +1,16 @@
 [
-    { "id": 1, "name": "New York" },
-    { "id": 2, "name": "Los Angeles" }
+  {
+    "id": 1,
+    "name": "New York"
+  },
+  {
+    "id": 2,
+    "name": "Los Angeles"
+  },
+  {
+    "id": 3,
+    "name": "Chicago",
+    "lat": 40.7128,
+    "lon": -74.006
+  }
 ]
