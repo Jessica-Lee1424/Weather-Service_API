@@ -12,5 +12,17 @@
     "name": "Chicago",
     "lat": 40.7128,
     "lon": -74.006
+  },
+  {
+    "id": 4,
+    "name": "Chicago",
+    "lat": 40.7128,
+    "lon": -74.006
+  },
+  {
+    "id": 5,
+    "name": "Chicago",
+    "lat": 40.7128,
+    "lon": -74.006
   }
 ]

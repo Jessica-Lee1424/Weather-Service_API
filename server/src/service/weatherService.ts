@@ -8,6 +8,12 @@ interface Coordinates {
   lon: number;
 }
 
+interface WeatherData {
+  temperature: number;
+  description: string;
+  humidity: number;
+  windSpeed: number;
+}
 // function getWeatherByCoordinates(coords: Coordinates) {
 //   const { lat, lon } = coords;
 //   const apiKey = process.env.API_KEY; // Accessing the API key from the environment variables
@@ -120,49 +126,62 @@ private async fetchWeatherData(lat: number, lon: number): Promise<any> {
 }
 
 // TO DO: parseCurrentWeather (will also use in fetchWeatherMethod
-//   fetch weather method data will make array that will be used in the function that renders it on the page)
+//fetch weather method data will make array that will be used in the function that renders it on)
 
 // Private method to parse current weather data
-// private parseCurrentWeather(data: any): { temperature: number; humidity: number; description: string } {
-//   const temperature = data.main.temp; // Extract temperature
-//   const humidity = data.main.humidity; // Extract humidity
-//   const description = data.weather[0].description; // Extract weather description
-
-//   return { temperature, humidity, description }; // Return parsed weather data
-// }
+private parseCurrentWeather(rawData: any): WeatherData {
+  return {
+      temperature: rawData.main.temp,
+      description: rawData.weather[0].description,
+      humidity: rawData.main.humidity,
+      windSpeed: rawData.wind.speed,
+  };
+}
 
 // TO DO: use this function in fetchWeatherData method
 
 // Private method to build forecast array
-// private buildForecastArray(data: any): Array<{ date: string; temperature: number; description: string }> {
-//   const forecastArray: Array<{ date: string; temperature: number; description: string }> = [];
+private async buildForecastArray(lat: number, lon: number): Promise<WeatherData[]> {
+  const forecastArray: WeatherData[] = [];
+  const apiKey = 'this.apiKey'; // Replace with your actual API key
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`; // Use the forecast API
 
-//   // Assuming the API returns a list of forecasts in data.list
-//   data.list.forEach((forecast: any) => {
-//       const date = forecast.dt_txt; // Extract the date and time
-//       const temperature = forecast.main.temp; // Extract temperature
-//       const description = forecast.weather[0].description; // Extract weather description
+  try {
+      const response = await fetch(url);
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const rawData = await response.json();
 
-//       // Push the structured forecast into the array
-//       forecastArray.push({ date, temperature, description });
-//   });
+      // Assuming the forecast data is in rawData.list and contains daily forecasts
+      for (const entry of rawData.list) {
+          const weatherData = this.parseCurrentWeather(entry); // Parse each entry
+          if (weatherData) {
+              forecastArray.push(weatherData); // Add to the forecast array
+          }
+      }
+  } catch (error) {
+      console.error('Error fetching forecast data:', error);
+  }
 
-//   return forecastArray; // Return the array of forecasts
-// }
-
+  return forecastArray; // Return the built forecast array
+}
 // Method to fetch weather data for a city
-async getWeatherForCity(cityParam:string): Promise<any> {
-  this.city=cityParam;
+async getWeatherForCity(cityParam: string): Promise<any> {
+  this.city = cityParam;
   const coordinates = await this.fetchAndDestructureLocationData(); // Fetch coordinates for the city
   if (coordinates) {
-      const weatherData = await this.fetchWeatherData(coordinates.lat, coordinates.lon); // Fetch current weather data
-      if (weatherData) {
-          // const currentWeather = this.parseCurrentWeather(weatherData); // Parse current weather data
-          // const forecastData = await this.fetchWeatherData(coordinates.lat, coordinates.lon); // Fetch forecast data
-          // const forecast
-          console.log(weatherData);
-        }
+      const currentWeather = await this.fetchWeatherData(coordinates.lat, coordinates.lon); // Fetch and parse current weather data
+      if (currentWeather) {
+          console.log(currentWeather); // Log the parsed current weather
+
+          // Step 3: Call buildForecastArray here
+          const forecastArray = await this.buildForecastArray(coordinates.lat, coordinates.lon);
+          console.log(forecastArray); // Log the forecast array
       }
     }
   }
+  
+}
+
  export default new WeatherService();
